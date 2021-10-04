@@ -97,7 +97,30 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+#header-id {
+    color: cadetblue;
+}
 
+.header-class {
+    color: slateblue;
+}
+
+#page-wrapper {
+    padding-left: 20px;
+    background-color: antiquewhite;
+}
+
+.form-style {
+    font-size: 16px;
+    font-family: "Arial Black", sans-serif;
+    font-weight: bold;
+    line-height: 20px;
+}
+
+#form-submit {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
 
 
 

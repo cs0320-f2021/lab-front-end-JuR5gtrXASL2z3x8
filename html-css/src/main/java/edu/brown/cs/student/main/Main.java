@@ -1,11 +1,13 @@
 package edu.brown.cs.student.main;
 
+import com.google.common.collect.ImmutableMap;
 import freemarker.template.Configuration;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -18,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -122,6 +125,7 @@ public final class Main {
     Spark.exception(Exception.class, new ExceptionPrinter()); // show exceptions in browser
     FreeMarkerEngine freeMarker = createEngine(); // create instance of freemarker engine
     Spark.get("/autocorrect", new AutocorrectHandler(), freeMarker);
+    Spark.post("/results", new SubmitHandler(), freeMarker);
   }
 
   /**
@@ -150,7 +154,10 @@ public final class Main {
    */
   private static class AutocorrectHandler implements TemplateViewRoute {
     public ModelAndView handle(Request req, Response res) {
-      return new ModelAndView(null, "main.ftl");
+      Map<String, String>
+          variables = ImmutableMap.of("title", "someTitle", "message",
+          "whateverYouChoose", "suggestions", "");
+      return new ModelAndView(variables, "autocorrect.ftl");
     }
   }
 
@@ -161,5 +168,21 @@ public final class Main {
    *  @return ModelAndView to render.
    *  (autocorrect.ftl).
    */
+  private static class SubmitHandler implements TemplateViewRoute {
+    public ModelAndView handle(Request req, Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String textFromTextField = qm.value("text");
+      Set<String> suggested = ac.suggest(textFromTextField);
+      StringBuilder suggestionString = new StringBuilder();
+      for (String suggestion : suggested) {
+        suggestionString.append(suggestion).append(", ");
+      }
+
+      Map<String, String>
+          variables = ImmutableMap.of("title", "someTitle", "message",
+          "whateverYouChoose", "suggestions", suggestionString.toString());
+      return new ModelAndView(variables, "autocorrect.ftl");
+    }
+  }
 
 }
