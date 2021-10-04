@@ -5,9 +5,11 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import joptsimple.OptionSpec;
 import spark.ExceptionHandler;
+import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
+import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.BufferedReader;
@@ -117,7 +119,9 @@ public final class Main {
   private void runSparkServer(int port) {
     Spark.port(port); // port number
     Spark.externalStaticFileLocation("src/main/resources/static"); // where to host static resources
-
+    Spark.exception(Exception.class, new ExceptionPrinter()); // show exceptions in browser
+    FreeMarkerEngine freeMarker = createEngine(); // create instance of freemarker engine
+    Spark.get("/autocorrect", new AutocorrectHandler(), freeMarker);
   }
 
   /**
@@ -144,6 +148,11 @@ public final class Main {
    *  @return ModelAndView to render.
    *  (autocorrect.ftl).
    */
+  private static class AutocorrectHandler implements TemplateViewRoute {
+    public ModelAndView handle(Request req, Response res) {
+      return new ModelAndView(null, "main.ftl");
+    }
+  }
 
   /**
    *  IMPLEMENT SubmitHandler HERE
