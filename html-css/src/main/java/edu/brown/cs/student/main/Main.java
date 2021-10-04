@@ -114,7 +114,9 @@ public final class Main {
    * * IMPLEMENT METHOD runSparkServer() HERE
    */
   private void runSparkServer(int port) {
-    // TODO
+    Spark.port(port); // port number
+    Spark.externalStaticFileLocation("src/main/resources/static"); // where to host static resources
+
   }
 
   /**
