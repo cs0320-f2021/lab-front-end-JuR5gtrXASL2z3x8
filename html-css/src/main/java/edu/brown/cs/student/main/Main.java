@@ -7,6 +7,7 @@ import joptsimple.OptionSpec;
 import spark.ExceptionHandler;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 import spark.template.freemarker.FreeMarkerEngine;
 
 import java.io.BufferedReader;
