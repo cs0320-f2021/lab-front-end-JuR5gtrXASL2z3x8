@@ -39,31 +39,22 @@ document.querySelector('#compute-button').addEventListener("click", addTwoNumber
 const myCart = {}
 
 function setUpShop () {
-    const cart_buttons = document.querySelector('.cart-button')
+    const cart_buttons = document.querySelectorAll('.cart-button')
     for (let i = 0; i < cart_buttons.length; i++){
         const btn = cart_buttons[i]
         const item_id = btn.getAttribute("data-for")
-        const item = document.querySelector('#' + `${item_id}`)
-        cart_buttons.addEventListener("click", () => addToCart(item))
-        //TODO: bind an event listener to the current button
-        //  - the event listener should be a function that calls addToCart(item),
-        //  hint: you can create an anonymous function inside of your call to
-        //  addEventListener like this: () => <function body>
+        const item = document.querySelector('#' + item_id)
+        btn.addEventListener("click", () => addToCart(item))
     }
 }
 
 function addToCart (item) {
     const itemID = item.id
     if (itemID in myCart) {
-        myCart.itemID += 1
+        myCart[itemID] += 1
     } else {
-        myCart.itemID = 1
+        myCart[itemID] = 1
     }
-    //TODO: increment the cart count for the given itemID in the cart object
-    //  - the cart should map cart item ids to their quantity.
-    //  - if an item is already present in the cart, increment its quantity
-    // -  if an item is not yet in the cart, set its quantity to 1
-    //  - you can check if a given key is in an object like so : if (itemID in myCart) {..}
 
     displayCart()
 }
@@ -74,41 +65,24 @@ function displayCart () {
     cart.innerHTML = ""
     let total = 0;
 
-    //TODO: fill in this method -- replace the question marks!
-    //  param item: the DOM element representing the item (of the class "store-item")
-    // 1) each store-item has a custom attribute "data-price". To retrieve an attribute
-    //    value for a given element, say "myAttribute", you can use element.getAttribute("myAttribute").
-    //    note that this value will be returned as a string
-    // 2) when adding html to the cart element, it should include the itemid, quantity,
-    //    and compound price (price x quantity).
-    //      ex: item 1, quantity: 3, $30
-    //    the item description, quantity, and price, should be rapped in a paragraph (<p> </p>) so that
-    //    each item displays on a new line
-
     const displayItem = function (item) {
-        const price = item.getAttribute("data-price");
-        const quantity = myCart.itemID
-        // remember that you can use the backtick method here (explained in the handout)
-        cart.innerHTML += `${item.id + quantity + parseFloat(price) * parseInt(quantity)}`
+        const price = item.getAttribute("data-price")
+        const quantity = myCart[item.id]
+
+        const paragraph = document.createElement("p");
+        const node = document.createTextNode(
+            `${item.id + ", quantity: " + quantity + ", $" + parseFloat(price) * parseInt(quantity)}`)
+        paragraph.appendChild(node);
+
+        cart.appendChild(paragraph)
         total += parseFloat(price) * parseInt(quantity)
     }
 
-    Object.keys(myCart).map((itemID) => displayItem(document.querySelector(itemID)))
+    Object.keys(myCart).map((itemID) => {
+        displayItem(document.querySelector('#' + itemID))
+    })
 
-    //TODO: call displayItem on each of the items in the myCart Object
-    // - the map function applies a function (supplied as the argument to the map call) to each of the
-    //   elements in a list.
-    //      ex: myList.map(someFunction)
-    // - to get the keys of an object as a list, you can use the Object.keys method:
-    //      ex: Object.keys(myObject)
-    // - in order to actually use the items in the list as the parameter to someFunction, you can use
-    //   an anonymous arrow function
-    //      ex: myList.map(a => someFunction(a))
-    //   remember that the keys of myCart are ~IDs~ of "store-item"s, not the DOM elements themselves',
-    //   and that the displayItem function takes in an actual DOM element.
-
-    document.querySelector('#cart-total').innerHTML = `${total}`
-    //TODO: update the inner html of the element with ID #cart-total with the compounded total!
+    document.querySelector('#cart-total').innerHTML = "$" + `${total}`
 }
 
 setUpShop()
